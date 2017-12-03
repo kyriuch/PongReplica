@@ -14,10 +14,14 @@ namespace PongReplica
     {
         public static GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
+        SpriteFont spriteFont;
 
 		List<Sprite> sprites;
 		Player player1;
 		Bot player2;
+
+        private int leftScore = 0;
+        private int rightScore = 0;
         
         public Game1()
         {
@@ -49,6 +53,8 @@ namespace PongReplica
 			int height = graphics.GraphicsDevice.PresentationParameters.Bounds.Height;
 			// Create a new SpriteBatch, which can be used to draw textures.
 			spriteBatch = new SpriteBatch(GraphicsDevice);
+            spriteFont = Content.Load<SpriteFont>("Score");
+            
 
 			player1 = new Player
 			{
@@ -93,6 +99,17 @@ namespace PongReplica
 
 			ball.CalculateMaxVector();
 			sprites.Add(ball);
+
+            ball.OnBallHit += (scoreSide) => {
+                if(scoreSide == 1)
+                {
+                    rightScore++;
+                }
+                else
+                {
+                    leftScore++;
+                }
+            };
 
 			player2.Ball = ball;
 
@@ -140,10 +157,23 @@ namespace PongReplica
 
 			spriteBatch.Begin();
 
-			foreach (var sprite in sprites)
-				sprite.Draw(gameTime, spriteBatch);
+			
+            spriteBatch.DrawString(spriteFont, leftScore.ToString(),
+                new Vector2(GraphicsDevice.PresentationParameters.Bounds.Width / 2 - 250, GraphicsDevice.PresentationParameters.Bounds.Height / 2 - 100),
+                Color.FromNonPremultiplied(150, 150, 150, 70));
 
-			spriteBatch.End();
+
+            spriteBatch.DrawString(spriteFont, rightScore.ToString(),
+                new Vector2(150 + GraphicsDevice.PresentationParameters.Bounds.Width / 2 , GraphicsDevice.PresentationParameters.Bounds.Height / 2 - 100 ),
+                Color.FromNonPremultiplied(150, 150, 150, 70));
+
+
+            foreach (var sprite in sprites)
+                sprite.Draw(gameTime, spriteBatch);
+
+
+
+            spriteBatch.End();
 
             base.Draw(gameTime);
         }
